@@ -30,7 +30,7 @@ func (h *AccountHandler) NewAccount(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	c.Status(http.StatusCreated)
 }
 
 func (h *AccountHandler) GetAccount(c *gin.Context) {

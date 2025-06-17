@@ -2,11 +2,11 @@ package in
 
 import (
 	"github.com/google/uuid"
-	"payment/internal/domain"
+	"order/internal/domain"
 )
 
-type AccountUseCase interface {
-	NewAccount(userID uuid.UUID) error
-	GetAccount(userID uuid.UUID) (*domain.Account, error)
-	ReplenishAccount(userID uuid.UUID, amount uint) error
+type OrderUseCase interface {
+	NewOrder(userID uuid.UUID, amount uint, description string) (*domain.Order, error)
+	GetOrderList(userID uuid.UUID) ([]domain.Order, error)
+	GetOrder(orderID uuid.UUID) (*domain.Order, error)
 }

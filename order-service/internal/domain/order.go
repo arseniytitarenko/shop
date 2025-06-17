@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type Order struct {
 	OrderID     uuid.UUID `gorm:"primaryKey"`
-	UserID      uuid.UUID
+	UserID      uuid.UUID `gorm:"index"`
 	Amount      uint
 	Description string
 	Status      Status

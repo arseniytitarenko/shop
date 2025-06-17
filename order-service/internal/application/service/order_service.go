@@ -1,38 +1,38 @@
 package service
 
 import (
-	"errors"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgconn"
-	"payment/internal/application/errs"
-	"payment/internal/application/port/out"
-	"payment/internal/domain"
+	"order/internal/application/port/out"
+	"order/internal/domain"
 )
 
-type AccountService struct {
-	accountRepo out.AccountRepo
+type OrderService struct {
+	orderRepo out.OrderRepo
 }
 
-func NewAccountService(accountRepo out.AccountRepo) *AccountService {
-	return &AccountService{accountRepo: accountRepo}
+func NewOrderService(orderRepo out.OrderRepo) *OrderService {
+	return &OrderService{orderRepo: orderRepo}
 }
 
-func (s *AccountService) NewAccount(userID uuid.UUID) error {
-	account := &domain.Account{
-		UserID: userID,
+func (s *OrderService) NewOrder(userID uuid.UUID, amount uint, description string) (*domain.Order, error) {
+	order := &domain.Order{
+		UserID:      userID,
+		Amount:      amount,
+		Description: description,
+		OrderID:     uuid.New(),
+		Status:      domain.StatusNew,
 	}
-	err := s.accountRepo.NewAccount(account)
-	var pgErr *pgconn.PgError
-	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-		return errs.ErrAccountAlreadyExists
+	err := s.orderRepo.NewOrder(order)
+	if err != nil {
+		return nil, err
 	}
-	return err
+	return order, nil
 }
 
-func (s *AccountService) ReplenishAccount(userID uuid.UUID, amount uint) error {
-	return s.accountRepo.ReplenishAccount(userID, amount)
+func (s *OrderService) GetOrderList(userID uuid.UUID) ([]domain.Order, error) {
+	return s.orderRepo.GetOrderList(userID)
 }
 
-func (s *AccountService) GetAccount(userID uuid.UUID) (*domain.Account, error) {
-	return s.accountRepo.GetAccount(userID)
+func (s *OrderService) GetOrder(orderID uuid.UUID) (*domain.Order, error) {
+	return s.orderRepo.GetOrder(orderID)
 }
