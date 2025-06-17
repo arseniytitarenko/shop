@@ -1,7 +1,12 @@
-package cmd
+package main
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"log"
+	"time"
+)
 
 func main() {
-	time.Sleep(5 * time.Second)
+	log.Println(uuid.New().String())
+	time.Sleep(time.Hour)
 }
