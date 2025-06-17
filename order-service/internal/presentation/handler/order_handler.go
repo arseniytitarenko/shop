@@ -24,7 +24,7 @@ func (h *OrderHandler) NewOrder(c *gin.Context) {
 		return
 	}
 
-	order, err := h.orderUseCase.NewOrder(orderRequest.UserID, orderRequest.Amount, orderRequest.Description)
+	order, err := h.orderUseCase.NewOrder(c.Request.Context(), orderRequest.UserID, orderRequest.Amount, orderRequest.Description)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -40,7 +40,7 @@ func (h *OrderHandler) GetOrderList(c *gin.Context) {
 		return
 	}
 
-	orders, err := h.orderUseCase.GetOrderList(orderListRequest.UserID)
+	orders, err := h.orderUseCase.GetOrderList(c.Request.Context(), orderListRequest.UserID)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -69,7 +69,7 @@ func (h *OrderHandler) GetOrderStatus(c *gin.Context) {
 		return
 	}
 
-	order, err := h.orderUseCase.GetOrder(orderRequest.OrderID)
+	order, err := h.orderUseCase.GetOrder(c.Request.Context(), orderRequest.OrderID)
 	if err != nil {
 		response.HandleError(c, err)
 		return

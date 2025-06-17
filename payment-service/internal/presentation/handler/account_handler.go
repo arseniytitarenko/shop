@@ -24,7 +24,7 @@ func (h *AccountHandler) NewAccount(c *gin.Context) {
 		return
 	}
 
-	err := h.accountUseCase.NewAccount(accountRequest.UserID)
+	err := h.accountUseCase.NewAccount(c.Request.Context(), accountRequest.UserID)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -40,7 +40,7 @@ func (h *AccountHandler) GetAccount(c *gin.Context) {
 		return
 	}
 
-	account, err := h.accountUseCase.GetAccount(accountRequest.UserID)
+	account, err := h.accountUseCase.GetAccount(c.Request.Context(), accountRequest.UserID)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -59,7 +59,8 @@ func (h *AccountHandler) ReplenishAccount(c *gin.Context) {
 		return
 	}
 
-	err := h.accountUseCase.ReplenishAccount(replenishAccountRequest.UserID, replenishAccountRequest.Amount)
+	err := h.accountUseCase.ReplenishAccount(c.Request.Context(), replenishAccountRequest.UserID,
+		replenishAccountRequest.Amount)
 	if err != nil {
 		response.HandleError(c, err)
 		return

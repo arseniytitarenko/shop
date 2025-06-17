@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -11,17 +12,18 @@ import (
 
 type AccountService struct {
 	accountRepo out.AccountRepo
+	txManager   out.Tx
 }
 
-func NewAccountService(accountRepo out.AccountRepo) *AccountService {
-	return &AccountService{accountRepo: accountRepo}
+func NewAccountService(txManager out.Tx, accountRepo out.AccountRepo) *AccountService {
+	return &AccountService{txManager: txManager, accountRepo: accountRepo}
 }
 
-func (s *AccountService) NewAccount(userID uuid.UUID) error {
+func (s *AccountService) NewAccount(ctx context.Context, userID uuid.UUID) error {
 	account := &domain.Account{
 		UserID: userID,
 	}
-	err := s.accountRepo.NewAccount(account)
+	err := s.accountRepo.NewAccount(ctx, account)
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 		return errs.ErrAccountAlreadyExists
@@ -29,10 +31,17 @@ func (s *AccountService) NewAccount(userID uuid.UUID) error {
 	return err
 }
 
-func (s *AccountService) ReplenishAccount(userID uuid.UUID, amount uint) error {
-	return s.accountRepo.ReplenishAccount(userID, amount)
+func (s *AccountService) ReplenishAccount(ctx context.Context, userID uuid.UUID, amount uint) error {
+	return s.txManager.Exec(ctx, func(ctx context.Context, tx out.TxRepo) error {
+		account, err := tx.AccountRepo().GetAccount(ctx, userID)
+		if err != nil {
+			return err
+		}
+		account.Balance += amount
+		return tx.AccountRepo().SaveAccount(ctx, account)
+	})
 }
 
-func (s *AccountService) GetAccount(userID uuid.UUID) (*domain.Account, error) {
-	return s.accountRepo.GetAccount(userID)
+func (s *AccountService) GetAccount(ctx context.Context, userID uuid.UUID) (*domain.Account, error) {
+	return s.accountRepo.GetAccount(ctx, userID)
 }
