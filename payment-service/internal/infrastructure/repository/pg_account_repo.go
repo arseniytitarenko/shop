@@ -21,7 +21,7 @@ func (p *PgAccountRepo) NewAccount(account *domain.Account) error {
 
 func (p *PgAccountRepo) GetAccount(accountID uuid.UUID) (*domain.Account, error) {
 	var account domain.Account
-	if err := p.db.Where("id = ?", accountID).First(&account).Error; err != nil {
+	if err := p.db.Where("user_id = ?", accountID).First(&account).Error; err != nil {
 		return nil, err
 	}
 	return &account, nil
@@ -31,7 +31,7 @@ func (p *PgAccountRepo) ReplenishAccount(accountID uuid.UUID, amount uint) error
 	return p.db.Transaction(func(tx *gorm.DB) error {
 		var account domain.Account
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
-			Where("id = ?", accountID).
+			Where("user_id = ?", accountID).
 			First(&account).Error; err != nil {
 			return err
 		}

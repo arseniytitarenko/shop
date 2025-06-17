@@ -9,6 +9,6 @@ func SetupRouter(accountHandler *handler.AccountHandler) *gin.Engine {
 	r := gin.Default()
 	r.POST("/accounts", accountHandler.NewAccount)
 	r.GET("/accounts", accountHandler.GetAccount)
-	r.GET("/accounts/:id/balance", accountHandler.GetAccount)
+	r.POST("/accounts/deposit", accountHandler.ReplenishAccount)
 	return r
 }
