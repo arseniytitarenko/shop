@@ -5,14 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"payment/internal/application/errs"
 )
 
 var errorStatusMap = map[error]int{
-	//errs.InvalidRequest:      http.StatusBadRequest,
-	//errs.ErrLocationNotFound: http.StatusNotFound,
-	//errs.ExternalApiError:    http.StatusServiceUnavailable,
-	//errs.StorageServiceError: http.StatusServiceUnavailable,
-	//errs.InvalidID:           http.StatusBadRequest,
+	errs.InvalidRequest:          http.StatusBadRequest,
+	errs.ErrAccountAlreadyExists: http.StatusConflict,
 }
 
 func HandleError(c *gin.Context, err error) {

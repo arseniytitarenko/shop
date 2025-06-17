@@ -24,7 +24,7 @@ func (h *AccountHandler) NewAccount(c *gin.Context) {
 		return
 	}
 
-	err := h.accountUseCase.NewAccount(c.Request.Context(), accountRequest.UserID)
+	err := h.accountUseCase.NewAccount(accountRequest.UserID)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -40,7 +40,7 @@ func (h *AccountHandler) GetAccount(c *gin.Context) {
 		return
 	}
 
-	account, err := h.accountUseCase.GetAccount(c.Request.Context(), accountRequest.UserID)
+	account, err := h.accountUseCase.GetAccount(accountRequest.UserID)
 	if err != nil {
 		response.HandleError(c, err)
 		return
@@ -50,4 +50,19 @@ func (h *AccountHandler) GetAccount(c *gin.Context) {
 		Balance: account.Balance,
 	}
 	c.JSON(http.StatusOK, accountResponse)
+}
+
+func (h *AccountHandler) ReplenishAccount(c *gin.Context) {
+	var replenishAccountRequest dto.ReplenishAccountRequest
+	if err := c.ShouldBindJSON(&replenishAccountRequest); err != nil {
+		response.HandleError(c, errs.InvalidRequest)
+		return
+	}
+
+	err := h.accountUseCase.ReplenishAccount(replenishAccountRequest.UserID, replenishAccountRequest.Amount)
+	if err != nil {
+		response.HandleError(c, err)
+		return
+	}
+	c.Status(http.StatusNoContent)
 }

@@ -7,7 +7,8 @@ import (
 
 func SetupRouter(accountHandler *handler.AccountHandler) *gin.Engine {
 	r := gin.Default()
-	r.POST("/account", accountHandler.NewAccount)
-	r.GET("/account", accountHandler.GetAccount)
+	r.POST("/accounts", accountHandler.NewAccount)
+	r.GET("/accounts", accountHandler.GetAccount)
+	r.GET("/accounts/:id/balance", accountHandler.GetAccount)
 	return r
 }
